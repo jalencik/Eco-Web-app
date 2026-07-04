@@ -1,0 +1,11 @@
+# One-click deployment blueprint for https://render.com (free tier).
+services:
+  - type: web
+    name: ecopulse
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
