@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="shell">
+  <aside class="sidebar">
+    <a class="sidebar-brand" href="{{ url_for('views.dashboard') }}">{% include "_logo.html" %}</a>
+
+    <nav class="sidebar-nav">
+      <a class="side-link {{ 'active' if request.endpoint == 'views.dashboard' }}"
+         href="{{ url_for('views.dashboard') }}">
+        <svg width="17" height="17"><use href="#i-grid"/></svg> Dashboard
+      </a>
+
+      <p class="side-label">Regions</p>
+      <div class="side-regions">
+        {% for r in REGIONS %}
+        <a class="side-link {{ 'active' if request.view_args and request.view_args.get('slug') == r.slug }}"
+           href="{{ url_for('views.region', slug=r.slug) }}">
+          <svg width="15" height="15"><use href="#i-pin"/></svg> {{ r.name }}
+        </a>
+        {% endfor %}
+      </div>
+
+      {% if current_user.is_admin %}
+      <p class="side-label">Administration</p>
+      <a class="side-link {{ 'active' if request.endpoint == 'admin.panel' }}"
+         href="{{ url_for('admin.panel') }}">
+        <svg width="17" height="17"><use href="#i-shield"/></svg> Admin panel
+      </a>
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user-chip">
+        <span class="avatar">{{ current_user.name[0] | upper }}</span>
+        <span class="user-meta">
+          <strong>{{ current_user.name }}</strong>
+          <small>{{ 'Administrator' if current_user.is_admin else 'Member' }}</small>
+        </span>
+      </div>
+      <form action="{{ url_for('auth.logout') }}" method="post">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-ghost btn-sm btn-block" type="submit">
+          <svg width="15" height="15"><use href="#i-logout"/></svg> Sign out
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+        <p class="page-sub">{% block page_sub %}{% endblock %}</p>
+      </div>
+      {% block topbar_right %}{% endblock %}
+    </header>
+    <main class="content">
+      {% include "_flash.html" %}
+      {% block main %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}
